@@ -101,3 +101,78 @@ static void Afficher(object c)
 // - l'impossibilité de remonter les exeptions
 // - l'impossibilité d'agir sur l'état d'un thread
 // - l'impossibilité de renvoyer un résultat
+
+private static Mutex m1 = new Mutex();
+
+public void Add()
+        {
+            Task.Run(() =>
+            {
+                m1.WaitOne();
+                ...
+                m1.ReleaseMutex();
+            });          
+        }
+// Le Mutex permet que la methode finisse avant que le token ne soit distribuer a un autre thread
+private object _lock = new object();
+public void Add()
+        {
+            Task t = Task.Run(() =>
+            {
+                lock (_lock)
+                {
+                    ...
+                }
+            });
+            t.Wait();
+        }
+// Le Lock a la même rôle que le mutex
+// t.wait permet d'attendre que la méthode a l'intérieur de la Task finisse avant de passer à la suivante
+// A chaque fois que la fonction Add sera lancée, elle sera lancé dans un nouveau thread
+
+Client c = new Client(nom, prenom, tel);
+Task t = Task.Run(()=>  c.Add());
+t.Wait();
+
+// Une Task peut renvoyer une valeur
+public static List<Operation> GetOperations(int compte)
+        {
+            
+            Task<List<Operation>> t = Task.Run(new Func<List<Operation>>(() =>
+            {
+                List<Operation> liste = new List<Operation>();
+                SqlCommand command = new SqlCommand("SELECT * FROM Operation  WHERE CompteId = @n", Connection.Instance);
+                command.Parameters.Add(new SqlParameter("@n", compte));
+                lock(new object())
+                {
+                    Connection.Instance.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        Operation o = new Operation()
+                        {
+                            Id = reader.GetInt32(0),
+                            CompteId = reader.GetInt32(1),
+                            Montant = reader.GetDecimal(2),
+                            DateOperation = reader.GetDateTime(3)
+                        };
+                        liste.Add(o);
+                    }
+                    reader.Close();
+                    command.Dispose();
+                    Connection.Instance.Close();
+                    return liste;
+                }
+                
+            }));
+            
+            return t.Result;
+        }
+
+// La Task renverra donc une liste d'operation
+
+// On peut affecter plusieurs méthode dans une Task.Factory
+Baignoire b = new Baignoire();
+Robinet r = new Robinet();
+Task.Factory.StartNew(() => r.debite(50, b));
+Task.Factory.StartNew(() => b.Fuite(10));
