@@ -36,6 +36,15 @@ private bool roule;
 // La méthode get set permet d'accéder au contenu de l'attribut
 // Alt + enter sur la propriété
 
+// Le bloc de code correspondant à l’accesseur get est exécuté à la lecture de la propriété ; 
+// Le bloc de code correspondant à l’accesseur set est exécuté au moment où une nouvelle valeur est assignée à la propriété. 
+// Une propriété sans accesseur set est considérée comme étant en lecture seule.
+// Une propriété sans accesseur get est considérée comme étant en écriture seule.
+// Une propriété qui possède les deux accesseurs est en lecture-écriture.
+
+// Contrairement aux champs, les propriétés ne sont pas classifiées en tant que variables.
+// Par conséquent, vous ne pouvez pas passer une propriété en tant que paramètre ref ou out.
+
 //attribut
 private int idClient;
 //propriété
@@ -197,7 +206,7 @@ _______________________________________________________________________Héritage
 // Ceci est donc possible grâce à la substitution qui permet de redéfinir un comportement hérité.
 // Ainsi, chaque fils sera libre de réécrire son propre comportement, si celui de son père ne lui convient pas.
 
-//Défini la class Personne
+// Défini la class Personne
 public  class Personne
     {
         protected string nom;
