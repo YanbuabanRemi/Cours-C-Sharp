@@ -84,9 +84,66 @@ public class TrieurDeTableau
     }
 }
 
+// Exemple de delegate :
+
+public MaClasseDeTraitement
+{
+    public delegate void AvantTraitementDelegate(List<int> elements);
+    public delegate List<int> ApresTraitementDelegate(List<int> elements);
+ 
+    // Méthode de calcul simple (inverser la liste)
+    public List<int> Calculer(List<int> elements,
+        AvantTraitementDelegate avant, ApresTraitementDelegate apres)
+    {
+        List<int> copie = new List<int>(elements);
+ 
+        // appel du delegate si défini
+        if (avant != null) avant(copie);
+ 
+        copie.Reverse();
+ 
+        // appel du delegate si défini
+        if (apres != null) copie = apres(copie);
+        return copie;
+    }
+}
+ 
+// Cette méthode ajoute un à chaque élément
+void AjouterUn(List<int> elements)
+{
+    for (int i = 0; i < elements.Count; i++)
+        elements[i] = elements[i] + 1;
+}
+ 
+// Cette méthode supprime les 0 de la liste
+List<int> SupprimerZero(List<int> elements)
+{
+  elements.Remove(0);
+  return elements;
+}
+ 
+void Main()
+{
+ MaClasseDeTraitement traitement = new MaClasseDeTraitement();
+ List<int> elements = new List<int>();
+ // TODO: remplir la liste ici
+ 
+ // Ici, j'appelle Calculer en passant les elements
+ // mais sans delegate
+ List<int> resultat1 = traitement.Calculer(elements, null, null);
+ 
+ // Cette fois-ci, on effectue l'appel mais
+ // en passant deux delegates :
+ // Le premier effectue un pré-traitement (ajouter un à chaque élément),
+ // Le second supprimer les 0 de la liste.
+ List<int> resultat2 = traitement.Calculer(elements, AjouterUn, SupprimerZero);
+}
+
+//Dans le premier cas, on appelle Calculer sans méthode de traitement.
+//Dans le second cas, on appelle Calculer avec les deux méthodes de traitement, ce qui va donc produire un résultat complètement différent.
 ---------------------------------------- Func / Action --------------------------------------------------
 
-// Les délégués Aciton et Func osnt des délégués générique
+// Les délégués Aciton et Func sont des délégués générique
 
 // Action est un délégué qui permet de pointer vers une méthode qui ne renvoie rien et qui peut accepter jusqu’à 16 types différents.
 private delegate void DelegateTri(int[] tableau);
